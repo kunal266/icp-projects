@@ -3,12 +3,15 @@ import logo from "../../assets/logo.png";
 import {Actor,HttpAgent} from '@dfinity/agent';
 import {idlFactory} from '../../../declarations/nft';
 import {Principal} from "@dfinity/principal"
+import Button from "./Button";
 function Item(props) {
   const[Owner,setowner] = useState();
   const [name,setName] = useState();
   const [image,setImage] = useState();
+  const [button,setButton] = useState();
+  const [priceInput,setpriceInput] = useState();
 
-  const id = Principal.fromText(props.id);
+  const id = props.id;
 
   const localhost = "http://localhost:8080/"
   const agent = new HttpAgent({host:localhost});
@@ -31,14 +34,30 @@ function Item(props) {
       new Blob([imageContent.buffer],{type:"image/png"})
       );
     setImage(image);
+
+    setButton(<Button handleClick={handleSell} text={"Sell"}/>)
   }
 
   useEffect(()=>{
 
     loadNFT();
   },[]);
+  let price;
+  function handleSell(){
+    console.log("sel button clicked");
+    setpriceInput(<input
+      placeholder="Price in DANG"
+      type="number"
+      className="price-input"
+      value={price}
+      onChange={(e)=>price=e.target.value}
+    />)
+    setButton(<Button handleClick={sellItem} text={"Confirm"}/>)
+  }
 
-  
+  async function sellItem(){
+      console.log("confirmed clicked")
+  } 
   return (
     <div className="disGrid-item">
       <div className="disPaper-root disCard-root makeStyles-root-17 disPaper-elevation1 disPaper-rounded">
@@ -53,6 +72,8 @@ function Item(props) {
           <p className="disTypography-root makeStyles-bodyText-24 disTypography-body2 disTypography-colorTextSecondary">
             Owner: {Owner}
           </p>
+          {priceInput}
+          {button}
         </div>
       </div>
     </div>
