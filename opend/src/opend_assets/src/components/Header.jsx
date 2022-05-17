@@ -9,12 +9,18 @@ import CURRENT_USER_ID from "../index";
 function Header() {
   
   const [userOwnerGallery,setOwnedGallery] = useState();
+  const [listingGallery,setlistingGallery] = useState();
 
   
   async function getNFTs(){
     const userNFTIds = await opend.getOwnedNFTs(CURRENT_USER_ID);
     console.log(userNFTIds);
-    setOwnedGallery(<Gallery title="My NFT" ids={userNFTIds}/>);
+    setOwnedGallery(<Gallery title="My NFT" ids={userNFTIds} role="collection"/>);
+
+    const listedNFTIds =await opend.getListedNFTs();
+    console.log(listedNFTIds);
+    setlistingGallery(<Gallery title="Discover" ids={listedNFTIds} role="discover"/>)
+    
   };
   useEffect(()=>{
     getNFTs();
@@ -35,7 +41,8 @@ function Header() {
           <div className="header-space-8"></div>
           <button className="ButtonBase-root Button-root Button-text header-navButtons-3">
             <Link to="/discover">
-            Discover</Link>
+              Discover
+            </Link>
           </button>
           <button className="ButtonBase-root Button-root Button-text header-navButtons-3">
             <Link to ="/minter">
@@ -53,7 +60,7 @@ function Header() {
       <img className="bottom-space" src={homeImage} />
       </Route>
       <Route path="/discover">
-        <h1>Discover</h1>
+        {listingGallery}
       </Route>
       <Route path="/minter">
       <Minter/>

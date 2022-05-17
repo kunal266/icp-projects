@@ -4,6 +4,7 @@ import Cycles "mo:base/ExperimentalCycles";
 import Debug  "mo:base/Debug";
 import HashMap "mo:base/HashMap";
 import List "mo:base/List";
+import Iter "mo:base/Iter";
 actor OpenD {
     
     private type Listing = {
@@ -17,7 +18,7 @@ actor OpenD {
 
     public shared(msg) func mint(imgData:[Nat8],name:Text):async Principal{
         let owner: Principal= msg.caller;
-
+        Debug.print(Principal.toText(msg.caller));
         Debug.print(debug_show(Cycles.balance()));
         Cycles.add(100_500_000_000);
 
@@ -53,16 +54,59 @@ actor OpenD {
         return List.toArray(userNFTs)
     };
 
+    public query func getListedNFTs(): async [Principal] {
+        let ids = Iter.toArray(mapofListings.keys());
+        return ids;
+    };
+
+
     public shared(msg) func listItem(id:Principal,price:Nat):async Text{
         var item : NFTActorClass.NFT = switch(mapOfNFTs.get(id)){
-            case null return "NFT Does Not Exist."
+            case null return "NFT Does Not Exist.";
             case (?result) result;
 
         };
 
+        let owner =await item.getOwner();
+        if (Principal.equal(owner,msg.caller)){
+            let newListing: Listing = {
+                itemOwner=owner;
+                itemPrice = price;
+            };
+            mapofListings.put(id,newListing);
+            return "Success";
+        } else {
+            return "You don't own the NFT";
+        }
         
 
-        return "Success";
+       
+    };
+    public query func getOpenDCanisterID(): async Principal{
+        return Principal.fromActor(OpenD);
+    };
+    public query func isListed(id:Principal):async Bool{
+        if (mapofListings.get(id)==null){
+            return false;
+        } else {
+           return true; 
+        }
+    };
+
+    public query func getOriginalOwner(id:Principal): async Principal{
+        var listing: Listing = switch(mapofListings.get(id)){
+            case null return Principal.fromText("");
+            case (?result) result;
+        };
+        return listing.itemOwner;
+    };
+
+    public query func getListedNFTPrice(id: Principal):async Nat {
+        var listing: Listing = switch(mapofListings.get(id)){
+            case null return 0;
+            case (?result) result;
+        };
+        return listing.itemPrice;
     }
 
 };
