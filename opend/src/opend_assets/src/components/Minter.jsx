@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {opend} from "../../../declarations/opend";
 import Item from "./Item";
+// import {Dropzone} from "./Dropzone";
 function Minter() {
 
   const {register,handleSubmit} = useForm();
@@ -45,6 +46,7 @@ function Minter() {
             type="file"
             accept="image/x-png,image/jpeg,image/gif,image/svg+xml,image/webp"
           />
+          {/* <Dropzone/> */}
         </div>
         <h6 className="form-Typography-root makeStyles-subhead-102 form-Typography-subtitle1 form-Typography-gutterBottom">
           Collection Name
