@@ -107,7 +107,7 @@ dfx canister call opend mint '(vec {137; 80; 78; 71; 13; 10; 26; 10; 0; 0; 0; 13
 2. List the item into mapOfListings:
 
 ```
-dfx canister call opend listItem '(principal "q3fc5-haaaa-aaaaa-aaahq-cai", 2)'
+dfx canister call opend listItem '(principal "rdmx6-jaaaa-aaaaa-aaadq-cai", 2)'
 ```
 
 3. Get OpenD canister ID:
@@ -119,15 +119,15 @@ dfx canister id opend
 4. Transfer NFT to OpenD:
 
 ```
-dfx canister call q3fc5-haaaa-aaaaa-aaahq-cai transferOwnership '(principal "ryjl3-tyaaa-aaaaa-aaaba-cai", true)'
+dfx canister call <NFT TOKEN ID> transferOwnership '(principal "<OPEND CANISTER ID>", true)'
 ```
 
 # Conneting to the Token Canister
 
 1. Copy over the token declarations folder
 
-2. Set the token canister id into the <REPLACE WITH TOKEN CANISTER ID>
+2. Set the token canister id into the rdmx6-jaaaa-aaaaa-aaadq-cai
 
 ```
-const dangPrincipal = Principal.fromText("<REPLACE WITH TOKEN CANISTER ID>");
+const dangPrincipal = Principal.fromText("rdmx6-jaaaa-aaaaa-aaadq-cai");
 ```

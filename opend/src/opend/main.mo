@@ -16,9 +16,9 @@ actor OpenD {
     var mapOfOwners = HashMap.HashMap<Principal, List.List<Principal>>(1,Principal.equal,Principal.hash);
     var mapofListings = HashMap.HashMap<Principal,Listing>(1,Principal.equal,Principal.hash);
 
-    public shared(msg) func mint(imgData:[Nat8],name:Text):async Principal{
-        let owner: Principal= msg.caller;
-        Debug.print(Principal.toText(msg.caller));
+    public func mint(owner:Principal,imgData:[Nat8],name:Text):async Principal{
+        // let owner: Principal= msg.caller;
+        Debug.print(Principal.toText(owner));
         Debug.print(debug_show(Cycles.balance()));
         Cycles.add(100_500_000_000);
 
@@ -60,17 +60,19 @@ actor OpenD {
     };
 
 
-    public shared(msg) func listItem(id:Principal,price:Nat):async Text{
+    public  func listItem(owner:Principal,id:Principal,price:Nat):async Text{
         var item : NFTActorClass.NFT = switch(mapOfNFTs.get(id)){
             case null return "NFT Does Not Exist.";
             case (?result) result;
 
         };
 
-        let owner =await item.getOwner();
-        if (Principal.equal(owner,msg.caller)){
+        let nftowner =await item.getOwner();
+        Debug.print(Principal.toText(nftowner));
+        Debug.print(Principal.toText(owner));
+        if (Principal.equal(nftowner,owner)){
             let newListing: Listing = {
-                itemOwner=owner;
+                itemOwner=nftowner;
                 itemPrice = price;
             };
             mapofListings.put(id,newListing);
@@ -107,6 +109,27 @@ actor OpenD {
             case (?result) result;
         };
         return listing.itemPrice;
-    }
+    };
+    public shared(msg) func completePurchase(id:Principal,ownerId:Principal,newOwnerId:Principal): async Text {
+        var purchasedNFT: NFTActorClass.NFT = switch(mapOfNFTs.get(id)){
+            case null return "NFT does not exist";
+            case (?result) result
+        };
+        let transferResult = await purchasedNFT.transferOwnership(newOwnerId);
+        if (transferResult=="Success"){
+            mapofListings.delete(id);
+            var ownedNFTs: List.List<Principal> =switch(mapOfOwners.get(ownerId)){
+                case null List.nil<Principal>();
+                case (?result) result;
+            };
+            ownedNFTs := List.filter(ownedNFTs,func(listItemIds:Principal):Bool{
+                return listItemIds !=id;
+            });
+            addToOwnershipMap(newOwnerId,id);
+        return "Success"
+        } else {
+            return transferResult;
+        }
+    };
 
 };

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import logo from "../../assets/logo.png";
 import {Actor,HttpAgent} from '@dfinity/agent';
 import {idlFactory} from '../../../declarations/nft';
+import {idlFactory as tokenidlFactory} from '../../../declarations/token';
 import {Principal} from "@dfinity/principal"
 import {opend} from "../../../declarations/opend";
 import Button from "./Button";
@@ -93,7 +94,7 @@ function Item(props) {
     setBlur({filter:"blur(4px)"});
     setloaderHidden(false);
       console.log("confirmed clicked");
-      const listingResult = await opend.listItem(props.id,Number(price));
+      const listingResult = await opend.listItem(CURRENT_USER_ID,props.id,Number(price));
       console.log("listing: "+listingResult);
       if (listingResult=="Success"){
         const openDId = await opend.getOpenDCanisterID();
@@ -111,9 +112,24 @@ function Item(props) {
 
   async function handleBuy(){
     console.log("Buy was triggered");
+    setloaderHidden(false);
+    const tokenActor = await Actor.createActor(tokenidlFactory,{
+      agent,
+      canisterId: Principal.fromText("qjdve-lqaaa-aaaaa-aaaeq-cai"),
+    });
+
+    const sellerId = await opend.getOriginalOwner(props.id);
+    const itemPrice = await opend.getListedNFTPrice(props.id);
+    const result = await tokenActor.transfer(sellerId,itemPrice);
+    console.log(result)
+    if (result=="Success"){
+      const transferResult = await opend.completePurchase(props.id,sellerId,CURRENT_USER_ID);
+      console.log("purchase: "+ transferResult);
+      setloaderHidden(true)
+    }
   }
   return (
-    <div className="disGrid-item">
+    <div style={{display:"block"}} className="disGrid-item">
       <div className="disPaper-root disCard-root makeStyles-root-17 disPaper-elevation1 disPaper-rounded">
         <img
           className="disCardMedia-root makeStyles-image-19 disCardMedia-media disCardMedia-img"
