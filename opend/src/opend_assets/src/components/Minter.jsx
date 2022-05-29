@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {opend} from "../../../declarations/opend";
+import CURRENT_USER_ID from "../index";
 import Item from "./Item";
 // import {Dropzone} from "./Dropzone";
 function Minter() {
@@ -16,7 +17,7 @@ function Minter() {
     const imageArray = await image.arrayBuffer()
     const imageByteData = [...new Uint8Array(imageArray)]
 
-    const newNFTID = await opend.mint(imageByteData,name);
+    const newNFTID = await opend.mint(CURRENT_USER_ID,imageByteData,name);
     console.log(newNFTID.toText());
     setNFTPrincipal(newNFTID);
     setloaderHidden(false);

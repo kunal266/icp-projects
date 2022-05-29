@@ -111,6 +111,12 @@ body {
   }
 }
 
+.Button-border{
+  border-width: 2px;
+  border-radius: 4px;
+  border-color: #5f64b5;
+}
+
 .Chip-root {
   color: #fff;
   border: none;
@@ -376,7 +382,9 @@ body {
     -webkit-print-color-adjust: exact;
   }
 }
-
+.bg-color {
+  background-color: rgba(0, 0, 0, 0.87);
+}
 .Button-root {
   color: rgba(0, 0, 0, 0.87);
   padding: 6px 16px;
